@@ -53,7 +53,7 @@ def main():
     cfg.data.test.test_mode = True
     cfg.seed = args.seed
     cfg.gpu_ids = [1]
-    cfg.work_dir = args.checkpoint
+    cfg.work_dir = '/'.join(args.checkpoint.split('/')[:-1])
     cfg.model.train_cfg = None
 
     dataset = build_dataset(cfg.data.test)
