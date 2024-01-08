@@ -28,6 +28,7 @@ import sys
 def parse_args():
     parser = argparse.ArgumentParser(description='Train a detector')
     parser.add_argument('--config', help='train config file path')
+    parser.add_argument('--exp-name', help='experiment name')
     parser.add_argument('--work-dir', help='the dir to save logs and models', default='/data/ephemeral/home/results/')
     parser.add_argument('--seed', type=int, default=2022, help='random seed')
     parser.add_argument('--epochs', type=int, default=20, help='# of epochs during training')
@@ -60,6 +61,10 @@ def main():
     cfg.gpu_ids = [0]
     cfg.runner = dict(type='EpochBasedRunner', max_epochs=args.epochs)
     cfg.evaluation = dict(interval=1, metric='bbox', save_best='bbox_mAP')
+    if args.exp_name is not None:
+        exp_name = args.exp_name
+    else:
+        exp_name = config_name
 
     # create work_dir
     mmcv.mkdir_or_exist(osp.abspath(cfg.work_dir))
@@ -107,7 +112,7 @@ def main():
     model.CLASSES = datasets[0].CLASSES
 
     wandb.init(project="Boost Camp Lv2-1",
-                name=f"[test]{config_name}",
+                name=f"{exp_name}",
                 config={"lr": 0.02, "batch_size": 32},
                 dir=args.work_dir) 
 
