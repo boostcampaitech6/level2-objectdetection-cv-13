@@ -22,7 +22,8 @@ from mmdet.utils import (collect_env, get_device, get_root_logger,
                          update_data_root)
 
 import wandb
-
+from pathlib import Path
+import sys
 
 def parse_args():
     parser = argparse.ArgumentParser(description='Train a detector')
@@ -39,8 +40,12 @@ def parse_args():
 def main():
     args = parse_args()
 
+    root_path = Path(__file__).parent.parent
+
     config_name = args.config
-    config_path = f"/data/ephemeral/home/mmdetection/configs/_teamconfig_/{config_name}/{config_name}_config.py"
+    config_path = os.path.join(root_path, "mmdetection/configs/_teamconfig_/")
+    config_path = os.path.join(config_path, config_name)
+
     cfg = Config.fromfile(config_path)
 
     # work_dir is determined in this priority: CLI > segment in file > filename
@@ -54,6 +59,7 @@ def main():
 
     cfg.gpu_ids = [0]
     cfg.runner = dict(type='EpochBasedRunner', max_epochs=args.epochs)
+    cfg.evaluation = dict(interval=1, metric='bbox', save_best='bbox_mAP')
 
     # create work_dir
     mmcv.mkdir_or_exist(osp.abspath(cfg.work_dir))
