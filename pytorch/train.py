@@ -1,4 +1,7 @@
 import os
+import json
+import numpy as np
+from sklearn.model_selection import StratifiedGroupKFold
 
 import torch
 import torchvision
@@ -10,6 +13,7 @@ from tqdm import tqdm
 import wandb
 
 from dataset import CustomDataset
+import code
 
 
 class Averager:
@@ -97,19 +101,36 @@ def train_fn(num_epochs, train_data_loader, optimizer, model, device):
             torch.save(model.state_dict(), save_path)
             best_loss = total_loss
 
-    
 
 def main():
     annotation = '../../dataset/train.json' # annotation path
     data_dir = '../../dataset' # data_dir path
-    train_dataset = CustomDataset(annotation, data_dir, train=True) 
-    train_data_loader = DataLoader(
-        train_dataset,
-        batch_size=16,
-        shuffle=False,
-        num_workers=0,
-        collate_fn=collate_fn
-    )
+
+    # Create training and validation datasets
+    with open(annotation) as f:
+        data = json.load(f)
+
+        var = [(ann['image_id'], ann['category_id']) for ann in data['annotations']]
+        y = np.array([v[1] for v in var])
+        groups = np.array([v[0] for v in var])
+        X = np.ones((len(var), 1))
+
+    cv = StratifiedGroupKFold(n_splits=5, shuffle=True, random_state=42)
+
+    train_idx, val_idx = next(iter(cv.split(X, y, groups)))
+    
+    train_img_ids = [int(groups[i]) for i in train_idx]
+    val_img_ids = [int(groups[i]) for i in val_idx]
+    train_img_ids = list(set(train_img_ids))
+    val_img_ids = list(set(val_img_ids))
+
+    train_dataset = CustomDataset(annotation, data_dir, train=True, img_ids=train_img_ids)
+    val_dataset = CustomDataset(annotation, data_dir, train=False, img_ids=val_img_ids)
+
+    # Create DataLoaders for training and validation
+    train_data_loader = DataLoader(train_dataset, batch_size=16, shuffle=True, num_workers=0, collate_fn=collate_fn)
+    val_data_loader = DataLoader(val_dataset, batch_size=16, shuffle=False, num_workers=0, collate_fn=collate_fn)
+
     device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
     
     # Load torchvision model
@@ -130,7 +151,7 @@ def main():
 
 
 if __name__ == '__main__':
-    wandb.init(project="Boost Camp Lv2-1", entity="frostings")
-    wandb.run.name = 'test'
+    # wandb.init(project="Boost Camp Lv2-1", entity="frostings")
+    # wandb.run.name = 'test'
     main()
-    wandb.finish()
+    # wandb.finish()

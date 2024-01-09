@@ -30,7 +30,7 @@ class CustomDataset(Dataset):
       transforms: data transform (resize, crop, Totensor, etc,,,)
     '''
 
-    def __init__(self, annotation, data_dir, train=True):
+    def __init__(self, annotation, data_dir, train=True, img_ids=None):
         super().__init__()
         self.train = train
         self.data_dir = data_dir
@@ -40,10 +40,15 @@ class CustomDataset(Dataset):
             self.transforms = get_train_transform()
         else:
             self.transforms = get_valid_transform()
+
+        if img_ids is not None:
+            self.img_ids = img_ids
+        else:
+            self.img_ids = self.coco.getImgIds()
             
 
     def __getitem__(self, index: int):
-        image_id = self.coco.getImgIds(imgIds=index)
+        image_id = self.img_ids[index]
         image_info = self.coco.loadImgs(image_id)[0]
         
         image = cv2.imread(os.path.join(self.data_dir, image_info['file_name']))
@@ -91,4 +96,4 @@ class CustomDataset(Dataset):
         return image, target, image_id
     
     def __len__(self) -> int:
-        return len(self.coco.getImgIds())
+        return len(self.img_ids)
