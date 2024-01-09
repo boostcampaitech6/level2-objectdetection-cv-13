@@ -17,3 +17,10 @@
  ┃ ┗ 📜train.py
  ┗ 📜README.md
 ```
+## Train
+
+`python mmdetection/train.py --config {_teamconfig_안에 있는 폴더명}/{config파일명} --work-dir {모델을 저장할 경로} --epochs {epoch 갯수}`
+
+## Test(Inference)
+
+`python mmdetection/test.py --config {_teamconfig_안에 있는 폴더명}/{config파일명} --checkpoint {모델이 저장된 경로}`
