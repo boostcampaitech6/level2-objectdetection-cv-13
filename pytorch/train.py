@@ -9,8 +9,7 @@ from torch.utils.data import DataLoader
 from tqdm import tqdm
 
 from dataset import CustomDataset
-import code
-# code.interact(local=dict(globals(), **locals()))
+
 
 class Averager:
     def __init__(self):
@@ -33,15 +32,35 @@ class Averager:
         self.iterations = 0.0
 
 
+class LossAverager:
+    def __init__(self):
+        self.averagers = {
+            'loss_classifier': Averager(),
+            'loss_box_reg': Averager(),
+            'loss_objectness': Averager(),
+            'loss_rpn_box_reg': Averager()
+        }
+
+    def send(self, loss_dict):
+        for loss_name in self.averagers:
+            self.averagers[loss_name].send(loss_dict[loss_name].item())
+
+    def reset(self):
+        for averager in self.averagers.values():
+            averager.reset()
+
+
 def collate_fn(batch):
     return tuple(zip(*batch))
 
 
 def train_fn(num_epochs, train_data_loader, optimizer, model, device):
     best_loss = float('inf')
-    loss_hist = Averager()
+    loss_hist = LossAverager()
+
     for epoch in range(num_epochs):
         loss_hist.reset()
+        model.train()
 
         for images, targets, image_ids in tqdm(train_data_loader):
             images = list(image.float().to(device) for image in images)
@@ -52,22 +71,32 @@ def train_fn(num_epochs, train_data_loader, optimizer, model, device):
             losses = sum(loss for loss in loss_dict.values())
             loss_value = losses.item()
 
-            loss_hist.send(loss_value)
-
             # backward
             optimizer.zero_grad()
             losses.backward()
             optimizer.step()
 
-        print(f"Epoch #{epoch+1} loss: {loss_hist.value}")
-        if loss_hist.value < best_loss:
+            # send losses to LossAverager
+            loss_hist.send(loss_dict)
+
+        # Prepare loss string and calculate total loss
+        loss_strings = [f"{loss_name}: {averager.value:.4f}" for loss_name, averager in loss_hist.averagers.items()]
+        total_loss = sum(averager.value for averager in loss_hist.averagers.values())
+        loss_strings.append(f"total_loss: {total_loss:.4f}")
+
+        # Print all losses in one line
+        print(f"Epoch #{epoch + 1} - " + "| ".join(loss_strings))
+
+        # Save the model if it has the best loss so far
+        if total_loss < best_loss:
             save_path = './models/best.pth'
             save_dir = os.path.dirname(save_path)
             if not os.path.exists(save_dir):
                 os.makedirs(save_dir)
             
             torch.save(model.state_dict(), save_path)
-            best_loss = loss_hist.value
+            best_loss = total_loss
+
     
 
 def main():
