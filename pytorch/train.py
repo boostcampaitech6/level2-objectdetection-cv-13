@@ -7,6 +7,7 @@ from torchvision.models.detection.faster_rcnn import FastRCNNPredictor
 
 from torch.utils.data import DataLoader
 from tqdm import tqdm
+import wandb
 
 from dataset import CustomDataset
 
@@ -69,7 +70,6 @@ def train_fn(num_epochs, train_data_loader, optimizer, model, device):
             # calculate loss
             loss_dict = model(images, targets)
             losses = sum(loss for loss in loss_dict.values())
-            loss_value = losses.item()
 
             # backward
             optimizer.zero_grad()
@@ -80,12 +80,12 @@ def train_fn(num_epochs, train_data_loader, optimizer, model, device):
             loss_hist.send(loss_dict)
 
         # Prepare loss string and calculate total loss
-        loss_strings = [f"{loss_name}: {averager.value:.4f}" for loss_name, averager in loss_hist.averagers.items()]
+        log_data = {f"train/{loss_name}": averager.value for loss_name, averager in loss_hist.averagers.items()}
         total_loss = sum(averager.value for averager in loss_hist.averagers.values())
-        loss_strings.append(f"total_loss: {total_loss:.4f}")
+        log_data["train/total_loss"] = total_loss
 
-        # Print all losses in one line
-        print(f"Epoch #{epoch + 1} - " + "| ".join(loss_strings))
+        # Log losses to wandb
+        wandb.log(log_data, step=epoch)
 
         # Save the model if it has the best loss so far
         if total_loss < best_loss:
@@ -130,4 +130,7 @@ def main():
 
 
 if __name__ == '__main__':
+    wandb.init(project="Boost Camp Lv2-1", entity="frostings")
+    wandb.run.name = 'test'
     main()
+    wandb.finish()
