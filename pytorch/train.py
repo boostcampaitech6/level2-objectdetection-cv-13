@@ -49,7 +49,6 @@ def train_fn(num_epochs, train_data_loader, optimizer, model, device):
 
             # calculate loss
             loss_dict = model(images, targets)
-
             losses = sum(loss for loss in loss_dict.values())
             loss_value = losses.item()
 
@@ -94,7 +93,7 @@ def main():
     model.to(device)
     params = [p for p in model.parameters() if p.requires_grad]
     
-    optimizer = torch.optim.SGD(params, lr=0.005, momentum=0.9, weight_decay=0.0005)
+    optimizer = torch.optim.Adam(params, lr=0.001, weight_decay=0.0005)
     num_epochs = 1
     
     # training
