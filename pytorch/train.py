@@ -8,8 +8,9 @@ from torchvision.models.detection.faster_rcnn import FastRCNNPredictor
 from torch.utils.data import DataLoader
 from tqdm import tqdm
 
-from dataset import CustomDataset, get_train_transform
-
+from dataset import CustomDataset
+import code
+# code.interact(local=dict(globals(), **locals()))
 
 class Averager:
     def __init__(self):
@@ -37,7 +38,7 @@ def collate_fn(batch):
 
 
 def train_fn(num_epochs, train_data_loader, optimizer, model, device):
-    best_loss = 1000
+    best_loss = float('inf')
     loss_hist = Averager()
     for epoch in range(num_epochs):
         loss_hist.reset()
@@ -73,7 +74,7 @@ def train_fn(num_epochs, train_data_loader, optimizer, model, device):
 def main():
     annotation = '../../dataset/train.json' # annotation path
     data_dir = '../../dataset' # data_dir path
-    train_dataset = CustomDataset('train', annotation, data_dir, get_train_transform()) 
+    train_dataset = CustomDataset(annotation, data_dir, train=True) 
     train_data_loader = DataLoader(
         train_dataset,
         batch_size=16,
@@ -94,7 +95,7 @@ def main():
     params = [p for p in model.parameters() if p.requires_grad]
     
     optimizer = torch.optim.SGD(params, lr=0.005, momentum=0.9, weight_decay=0.0005)
-    num_epochs = 12
+    num_epochs = 1
     
     # training
     train_fn(num_epochs, train_data_loader, optimizer, model, device)

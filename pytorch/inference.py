@@ -23,11 +23,11 @@ def inference_fn(test_data_loader, model, device):
 
 
 def main():
-    annotation = '../../dataset/test.json' # annotation 경로
-    data_dir = '../../dataset' # dataset 경로
-    test_dataset = CustomDataset('test', annotation, data_dir)
+    annotation = '../../dataset/test.json' # annotation path
+    data_dir = '../../dataset' # dataset path
+    test_dataset = CustomDataset(annotation, data_dir, train=False)
     score_threshold = 0.05
-    check_point = './checkpoints/faster_rcnn_torchvision_checkpoints.pth' # 체크포인트 경로
+    model_file = './models/best.pth' # model path
     
     test_data_loader = DataLoader(
         test_dataset,
@@ -45,7 +45,7 @@ def main():
     in_features = model.roi_heads.box_predictor.cls_score.in_features
     model.roi_heads.box_predictor = FastRCNNPredictor(in_features, num_classes)
     model.to(device)
-    model.load_state_dict(torch.load(check_point))
+    model.load_state_dict(torch.load(model_file))
     model.eval()
     
     outputs = inference_fn(test_data_loader, model, device)
@@ -69,7 +69,7 @@ def main():
     submission['PredictionString'] = prediction_strings
     submission['image_id'] = file_names
 
-    save_path = './result/faster_rcnn_torchvision_submission.csv'
+    save_path = './result/inference.csv'
     save_dir = os.path.dirname(save_path)
     if not os.path.exists(save_dir):
         os.makedirs(save_dir)

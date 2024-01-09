@@ -10,25 +10,37 @@ import torch
 from torch.utils.data import Dataset
 
 
+def get_train_transform():
+    return A.Compose([
+        A.Resize(1024, 1024),
+        A.Flip(p=0.5),
+        ToTensorV2(p=1.0)
+    ], bbox_params={'format': 'pascal_voc', 'label_fields': ['labels']})
+
+
+def get_valid_transform():
+    return A.Compose([
+        ToTensorV2(p=1.0)
+    ], bbox_params={'format': 'pascal_voc', 'label_fields': ['labels']})
+
+
 class CustomDataset(Dataset):
     '''
       data_dir: data가 존재하는 폴더 경로
       transforms: data transform (resize, crop, Totensor, etc,,,)
     '''
 
-    def __init__(self, data_type, annotation, data_dir, transforms=None):
+    def __init__(self, annotation, data_dir, train=True):
         super().__init__()
-        self.data_type = data_type
+        self.train = train
         self.data_dir = data_dir
         self.coco = COCO(annotation)
         
-        if self.data_type == 'train':
-            self.predictions = {
-                "images": self.coco.dataset["images"].copy(),
-                "categories": self.coco.dataset["categories"].copy(),
-                "annotations": None
-            }
-            self.transforms = transforms
+        if self.train:
+            self.transforms = get_train_transform()
+        else:
+            self.transforms = get_valid_transform()
+            
 
     def __getitem__(self, index: int):
         image_id = self.coco.getImgIds(imgIds=index)
@@ -41,20 +53,21 @@ class CustomDataset(Dataset):
         ann_ids = self.coco.getAnnIds(imgIds=image_info['id'])
         anns = self.coco.loadAnns(ann_ids)
 
-        if self.data_type == 'test':
-            image = torch.tensor(image, dtype=torch.float32).permute(2,0,1)
+        # torchvision faster_rcnn은 label=0을 background로 취급
+        # class_id를 1~10으로 수정 
+        labels = np.array([x['category_id'] + 1 for x in anns]) 
+        labels = torch.as_tensor(labels, dtype=torch.int64)
+
+        if not self.train:
+            sample = self.transforms(image=image, labels=labels)
+            image = sample['image']
             return image
 
         boxes = np.array([x['bbox'] for x in anns])
 
-        # boxex (x_min, y_min, x_max, y_max)
+        # boxex (xmin, ymin, width, height) -> (x_min, y_min, x_max, y_max)
         boxes[:, 2] = boxes[:, 0] + boxes[:, 2]
         boxes[:, 3] = boxes[:, 1] + boxes[:, 3]
-        
-        # torchvision faster_rcnn은 label=0을 background로 취급
-        # class_id를 1~10으로 수정 
-        labels = np.array([x['category_id']+1 for x in anns]) 
-        labels = torch.as_tensor(labels, dtype=torch.int64)
         
         areas = np.array([x['area'] for x in anns])
         areas = torch.as_tensor(areas, dtype=torch.float32)
@@ -75,22 +88,7 @@ class CustomDataset(Dataset):
             sample = self.transforms(**sample)
             image = sample['image']
             target['boxes'] = torch.tensor(sample['bboxes'], dtype=torch.float32)
-
         return image, target, image_id
     
     def __len__(self) -> int:
         return len(self.coco.getImgIds())
-
-
-def get_train_transform():
-    return A.Compose([
-        A.Resize(1024, 1024),
-        A.Flip(p=0.5),
-        ToTensorV2(p=1.0)
-    ], bbox_params={'format': 'pascal_voc', 'label_fields': ['labels']})
-
-
-def get_valid_transform():
-    return A.Compose([
-        ToTensorV2(p=1.0)
-    ], bbox_params={'format': 'pascal_voc', 'label_fields': ['labels']})
