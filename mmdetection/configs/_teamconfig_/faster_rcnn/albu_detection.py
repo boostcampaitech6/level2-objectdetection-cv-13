@@ -1,3 +1,9 @@
+'''
+bbox_mAP: 0.2660, bbox_mAP_50: 0.4540, bbox_mAP_75: 0.2670, 
+bbox_mAP_s: 0.0000, bbox_mAP_m: 0.0240, bbox_mAP_l: 0.3160, 
+bbox_mAP_copypaste: 0.266 0.454 0.267 0.000 0.024 0.316
+'''
+
 
 # dataset settings
 dataset_type = 'CocoDataset'
