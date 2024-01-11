@@ -12,8 +12,7 @@ pip install -r requirements.txt
 
 ```python
 python convert_coco_to_yolo.py
-python main.py --train  # train
-python main.py --inference # inference
+python main.py
 ```
 
 ### Caution
