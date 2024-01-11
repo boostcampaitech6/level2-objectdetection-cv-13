@@ -1,6 +1,6 @@
 path: dataset  # dataset root dir
-train: yolo_train
-val: yolo_eval
+train: yolo/train_fold2
+val: yolo/valid_fold2
 
 # Classes
 names:

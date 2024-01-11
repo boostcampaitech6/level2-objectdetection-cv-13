@@ -9,3 +9,5 @@ scikit-learn
 ultralytics
 pandas
 wandb
+pycocotools
+ensemble_boxes

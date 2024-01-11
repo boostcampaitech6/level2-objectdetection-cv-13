@@ -76,8 +76,7 @@ def convert_coco_to_yolo_format(root_dir: str, json_file: str, save_dir: str, im
         
 
 if __name__ == '__main__':
-    # train_img_ids, val_img_ids = split_straitify("../dataset", "new_train.json")
-    # convert_coco_to_yolo_format("../dataset", "new_train.json", "yolo_train", sorted(train_img_ids))
-    # convert_coco_to_yolo_format("../dataset", "new_train.json", "yolo_eval", sorted(val_img_ids))
-    convert_coco_to_yolo_format("../dataset", "k-fold-2024/train_fold0.json", "yolo_train", None)
-    convert_coco_to_yolo_format("../dataset", "k-fold-2024/valid_fold0.json", "yolo_eval", None)
+    fold = 5
+    for i in range(fold):
+        convert_coco_to_yolo_format("../dataset", f"k-fold-2024/train_fold{i}.json", f"yolo/train_fold{i}", None)
+        convert_coco_to_yolo_format("../dataset", f"k-fold-2024/valid_fold{i}.json", f"yolo/valid_fold{i}", None)
