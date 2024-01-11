@@ -11,26 +11,26 @@ def train():
     wandb.init(
         project="Boost Camp Lv2-1",
         entity="frostings",
-        name="yolov8m",
-        notes="yolov8m with sample data augmentation",
+        name="yolov8x",
+        notes="yolov8x with sample data augmentation",
     )
         
-    model = YOLO("yolov8m.pt")
+    model = YOLO("yolov8x.pt")
     model.train(
-        data="cfg/default.yaml", epochs=10, imgsz=1280, 
-        project="yolo_train", name="yolov8m", device=0,
-        batch=16
+        data="cfg/default.yaml", epochs=150, imgsz=640, 
+        project="yolo_train", name="yolov8x", device=0,
+        batch=32
     )
     
 
 def inference():
-    model = YOLO("yolo_train/yolov8m/weights/best.pt")
+    model = YOLO("yolo_train/yolov8x/weights/best.pt")
     infer_images = sorted(glob("../dataset/test/*.jpg"))
     prediction_strings = []
     file_names = []
 
     for idx, infer_image in tqdm(enumerate(infer_images)):
-        img_id = '/'.join(infer_image.split('/')[1:])
+        img_id = '/'.join(infer_image.split('/')[2:])
         results = model.predict(infer_image, conf=0.05, iou=0.7)
         boxes = results[0].boxes
         
@@ -47,16 +47,18 @@ def inference():
     submission = pd.DataFrame()
     submission["PredictionString"] = prediction_strings
     submission["image_id"] = file_names
-    submission.to_csv("yolov8m_result.csv", index=False)
+    submission.to_csv("yolov8x_result.csv", index=False)
     
     
 if __name__ == '__main__':
-    parser = ArgumentParser()
-    parser.add_argument('--train', action='store_true')
-    parser.add_argument('--inference', action='store_true')
+    # parser = ArgumentParser()
+    # parser.add_argument('--train', action='store_true')
+    # parser.add_argument('--inference', action='store_true')
     
-    args = parser.parse_args()
-    if args.train:
-        train()
-    if args.inference:
-        inference()
+    # args = parser.parse_args()
+    # if args.train:
+    #     train()
+    # if args.inference:
+    #     inference()
+    train()
+    inference()
