@@ -1,3 +1,4 @@
+import os
 import wandb
 from glob import glob
 
@@ -7,31 +8,31 @@ from ultralytics import YOLO
 from argparse import ArgumentParser
 
 
-def train():   
+def train(config: list[str | os.PathLike, str]):   
     wandb.init(
         project="Boost Camp Lv2-1",
         entity="frostings",
-        name="yolov8x",
+        name=f"yolov8x_{config[1]}",
         notes="yolov8x with sample data augmentation",
     )
         
     model = YOLO("yolov8x.pt")
     model.train(
-        data="cfg/default.yaml", epochs=150, imgsz=640, 
-        project="yolo_train", name="yolov8x", device=0,
+        data=config[0], epochs=50, imgsz=640, 
+        project="yolo_train", name=f"yolov8x_{config[1]}", device=0,
         batch=32
     )
     
 
-def inference():
-    model = YOLO("yolo_train/yolov8x/weights/best.pt")
+def inference(config: list[str | os.PathLike, str]): 
+    model = YOLO(f"yolo_train/yolov8x_{config[1]}/weights/best.pt")
     infer_images = sorted(glob("../dataset/test/*.jpg"))
     prediction_strings = []
     file_names = []
 
     for idx, infer_image in tqdm(enumerate(infer_images)):
         img_id = '/'.join(infer_image.split('/')[2:])
-        results = model.predict(infer_image, conf=0.05, iou=0.7)
+        results = model.predict(infer_image, conf=0.05)
         boxes = results[0].boxes
         
         prediction_string = ''
@@ -47,18 +48,19 @@ def inference():
     submission = pd.DataFrame()
     submission["PredictionString"] = prediction_strings
     submission["image_id"] = file_names
-    submission.to_csv("yolov8x_result.csv", index=False)
+    submission.to_csv(f"yolov8x_{config[1]}_result.csv", index=False)
     
     
 if __name__ == '__main__':
-    # parser = ArgumentParser()
-    # parser.add_argument('--train', action='store_true')
-    # parser.add_argument('--inference', action='store_true')
+    configs = [
+        ["cfg/fold0.yaml", "fold0"],
+        ["cfg/fold1.yaml", "fold1"],
+        ["cfg/fold2.yaml", "fold2"],
+        ["cfg/fold3.yaml", "fold3"],
+        ["cfg/fold4.yaml", "fold4"]
+    ]
     
-    # args = parser.parse_args()
-    # if args.train:
-    #     train()
-    # if args.inference:
-    #     inference()
-    train()
-    inference()
+    for i, config in enumerate(configs):
+        train(config)
+        inference(config)
+    
