@@ -1,4 +1,4 @@
-checkpoint_config = dict(interval=5)
+checkpoint_config = dict(interval=10)
 # yapf:disable
 log_config = dict(
     interval=50,
@@ -37,3 +37,5 @@ mp_start_method = 'fork'
 #       or not by default.
 #   - `base_batch_size` = (8 GPUs) x (2 samples per GPU).
 auto_scale_lr = dict(enable=False, base_batch_size=16)
+
+evaluation = dict(interval=1, metric='bbox', save_best='bbox_mAP_50')
