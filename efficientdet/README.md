@@ -1,4 +1,4 @@
-## YOLOv8 Traning with Custom Dataset
+## EfficientDet Traning with Custom Dataset
 
 ### Installation
 ``` bash
