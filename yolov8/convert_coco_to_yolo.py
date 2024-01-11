@@ -32,7 +32,7 @@ def split_straitify(root_dir: str, json_file: str):
     return train_img_ids, val_img_ids
 
 
-def convert_coco_to_yolo_format(root_dir: str, json_file: str, save_dir: str, img_ids: list):
+def convert_coco_to_yolo_format(root_dir: str, json_file: str, save_dir: str, img_ids: list = None):
     # Check directory
     try:
         assert os.path.exists(os.path.join(root_dir, save_dir, "images")) == True
@@ -51,7 +51,7 @@ def convert_coco_to_yolo_format(root_dir: str, json_file: str, save_dir: str, im
     print("Start converting...")
     for image in tqdm(sorted(coco_json["images"], key=lambda x: x["id"])):
         w, h, file_name, image_id = image["width"], image["height"], image["file_name"], image["id"]
-        if image_id not in img_ids:
+        if img_ids is not None and image_id not in img_ids:
             continue
         file_name = file_name.split("/")[1]
 
@@ -73,9 +73,11 @@ def convert_coco_to_yolo_format(root_dir: str, json_file: str, save_dir: str, im
         # Copy image to new directory
         shutil.copy(os.path.join(root_dir, "train", file_name), os.path.join(root_dir, save_dir, "images", file_name))
     print("Finish converting...")
-    
+        
 
 if __name__ == '__main__':
-    train_img_ids, val_img_ids = split_straitify("../dataset", "train.json")
-    convert_coco_to_yolo_format("../dataset", "train.json", "yolo_train", sorted(train_img_ids))
-    convert_coco_to_yolo_format("../dataset", "train.json", "yolo_eval", sorted(val_img_ids))
+    # train_img_ids, val_img_ids = split_straitify("../dataset", "new_train.json")
+    # convert_coco_to_yolo_format("../dataset", "new_train.json", "yolo_train", sorted(train_img_ids))
+    # convert_coco_to_yolo_format("../dataset", "new_train.json", "yolo_eval", sorted(val_img_ids))
+    convert_coco_to_yolo_format("../dataset", "k-fold-2024/train_fold0.json", "yolo_train", None)
+    convert_coco_to_yolo_format("../dataset", "k-fold-2024/valid_fold0.json", "yolo_eval", None)
