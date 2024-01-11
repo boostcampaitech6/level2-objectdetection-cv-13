@@ -1,8 +1,10 @@
 import os
 import sys
+import random
 from glob import glob
 from argparse import ArgumentParser
 
+import torch
 import wandb
 import numpy as np
 import pandas as pd
@@ -121,8 +123,23 @@ def wbf_ensemble():
     #===========================================#
     submission.head()
 
+def set_seed(seed: int):
+    """Set seed for reproducibility.
+    Args:
+        seed (int): seed number
+    Returns:
+        None
+    """
+    random.seed(seed)
+    np.random.seed(seed)
+    torch.manual_seed(seed)
+    torch.cuda.manual_seed_all(seed)
+    torch.backends.cudnn.deterministic = True
+    torch.backends.cudnn.benchmark = False
+
     
 if __name__ == '__main__':
+    set_seed(2022)
     configs = [
         ["cfg/fold0.yaml", "fold0"],
         ["cfg/fold1.yaml", "fold1"],
