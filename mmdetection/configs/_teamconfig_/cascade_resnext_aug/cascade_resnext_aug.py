@@ -12,3 +12,5 @@ model = dict(
         style='pytorch',
         init_cfg=dict(
             type='Pretrained', checkpoint='open-mmlab://resnext101_32x4d')))
+
+total_epochs = 25
