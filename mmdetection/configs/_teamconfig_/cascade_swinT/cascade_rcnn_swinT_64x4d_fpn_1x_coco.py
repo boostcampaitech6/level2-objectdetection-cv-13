@@ -15,11 +15,11 @@ model = dict(
         attn_drop_rate=0.,
         drop_path_rate=0.2,
         patch_norm=True,
-        out_indices=(1, 2, 3),
+        out_indices=(0, 1, 2, 3),
         # Please only add indices that would be used
         # in FPN, otherwise some parameter will not be used
         with_cp=False,
         convert_weights=True,
         init_cfg=dict(type='Pretrained', checkpoint=pretrained)),
     
-    neck=dict(in_channels=[192, 384, 768], start_level=0, num_outs=5))
+    neck=dict(in_channels=[96, 192, 384, 768]))
