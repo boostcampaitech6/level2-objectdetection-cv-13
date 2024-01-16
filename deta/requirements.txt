@@ -1,0 +1,17 @@
+--extra-index-url https://download.pytorch.org/whl/cu118
+torch==2.1.0+cu118
+--extra-index-url https://download.pytorch.org/whl/cu118
+torchvision==0.16.0+cu118
+
+pytorch-lightning==1.9.0
+transformers
+numpy
+pillow
+opencv-python
+pandas
+tqdm
+pycocotools
+timm
+wandb
+scipy
+coco-eval
