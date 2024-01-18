@@ -30,7 +30,7 @@ train_pipeline = [
     dict(type='LoadAnnotations', with_bbox=True),
     dict(
         type='Resize',
-        img_scale=[(256, 256), (512, 512)],
+        img_scale=[(256, 256), (512, 512),(1024, 1024)],
         multiscale_mode='value',
         keep_ratio=True,
         backend='pillow'),
@@ -60,7 +60,7 @@ test_pipeline = [
     dict(type='LoadImageFromFile'),
     dict(
         type='MultiScaleFlipAug',
-        img_scale=(512, 512),
+        img_scale=(1024, 1024),
         flip=False,
         transforms=[
             dict(type='Resize', keep_ratio=True, backend='pillow'),
@@ -81,13 +81,13 @@ data = dict(
         times=2,
         dataset=dict(
         type=dataset_type,
-        ann_file=data_root + 'k-fold-2024/train_fold0.json',
+        ann_file=data_root + 'k-fold-2024/train_fold2.json',
         img_prefix=data_root,
         classes=classes,
         pipeline=train_pipeline)),
     val=dict(
         type=dataset_type,
-        ann_file=data_root + 'k-fold-2024/valid_fold0.json',
+        ann_file=data_root + 'k-fold-2024/valid_fold2.json',
         img_prefix=data_root,
         classes=classes,
         pipeline=test_pipeline),

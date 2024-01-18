@@ -60,6 +60,8 @@ def main():
 
     cfg.gpu_ids = [0]
     cfg.runner = dict(type='EpochBasedRunner', max_epochs=args.epochs)
+    cfg.fp16 = dict(loss_scale=512.)
+    cfg.runner.meta = dict(fp16=cfg.fp16)
     cfg.evaluation = dict(interval=1, metric='bbox', save_best='bbox_mAP')
     if args.exp_name is not None:
         exp_name = args.exp_name
@@ -112,6 +114,7 @@ def main():
     model.CLASSES = datasets[0].CLASSES
 
     wandb.init(project="Boost Camp Lv2-1",
+               entity='frostings',
                 name=f"{exp_name}",
                 config={"lr": 0.02, "batch_size": 32},
                 dir=args.work_dir) 
