@@ -47,6 +47,7 @@
 ┣ 📜 Train-valid_Split.ipynb
 ┗ 📜 README.md
 ```
+# 실행 코드
 
 > ## DINO 실행 방법 및 코드
 
@@ -105,10 +106,44 @@ python mmdetection/test.py --config {_teamconfig_안에 있는 폴더명}/{confi
 python mmdetection/test.py --config cascade_rcnn/cascade_rcnn_config.py --checkpoint results/cascade/best.pth
 ```
 
+> ## YOLOv8 실행 방법 및 코드
+
+### 1. Installation
+
+```
+python -m venv ./venv
+source venv/bin/activate
+pip install -r requirements.txt
+```
+
+### 2. Dataset transfer (coco to yolo)
+
+```
+python convert_coco_to_yolo.py
+```
+
+### 3. Train
+
+```
+python main.py
+```
+
 
 > ## Ensemble 방법
 
-- wbf_ensemble.ipynb 파일에서 csv파일 경로를 지정한 후 앙상블하실 수 있습니다.
+- [wbf_ensemble.ipynb](https://github.com/boostcampaitech6/level2-objectdetection-cv-13/blob/develop/wbf_ensemble.ipynb) 파일에서 csv파일 경로를 지정한 후 앙상블하실 수 있습니다.
+
+---
+
+## Top 5 Score
+
+| | Submit | LB Score |
+|  ---  |  ---  |  ---  |
+|**1st**| Cascade R-CNN Swin-T-Large 5fold(WBF) + DINO (All Dataset), NMS Ensemble | 0.7013 |
+|**2nd**| Cascade R-CNN Swin-T-Large 5fold(WBF) + DINO (1fold + All Dataset, WBF), NMS Ensemble | 0.6980 |
+|**3rd**| Cascade R-CNN Swin-T-Large 5fold(WBF) + DINO 1fold, NMS Ensemble | 0.6930 |
+|**4th**| Cascade R-CNN Swin-T-Large 5fold(WBF) | 0.6881 |
+|**5th**| Cascade R-CNN Swin-T-Large 5fold(WBF) + YOLOv8x 1fold | 0.6878 |
 
 ---
 
@@ -124,3 +159,12 @@ python mmdetection/test.py --config cascade_rcnn/cascade_rcnn_config.py --checkp
 - Swin-Large를 Backbone으로 사용한 DINO는 Train set 전체를 사용하였습니다.
 
 - 최종적으로 위 두 모델을 NMS Ensemble하였고, 그 결과 리더보드 Public mAP_50 0.7013, Private mAP_50 0.6850을 기록하였습니다.
+  
+---
+
+## Team SMiLE
+
+|    | 김영일_T6030 | 안세희_T6094 | 유한준_T6106 | 윤일호_T6110 | 이재혁_T6132 |
+|---|        ---        |        ---        |        ---        |          ---      |        ---        |
+|Github|[![GitHub](https://img.shields.io/badge/github-%23121011.svg?style=for-the-badge&logo=github&logoColor=white)](https://github.com/patrashu)|[![GitHub](https://img.shields.io/badge/github-%23121011.svg?style=for-the-badge&logo=github&logoColor=white)](https://github.com/seheeAn)|[![GitHub](https://img.shields.io/badge/github-%23121011.svg?style=for-the-badge&logo=github&logoColor=white)](https://github.com/lukehanjun)|[![GitHub](https://img.shields.io/badge/github-%23121011.svg?style=for-the-badge&logo=github&logoColor=white)](https://github.com/yuniroro)|[![GitHub](https://img.shields.io/badge/github-%23121011.svg?style=for-the-badge&logo=github&logoColor=white)](https://github.com/NewP1)|
+|E-mail|[![Gmail Badge](https://img.shields.io/badge/Gmail-d14836?style=flat-square&logo=Gmail&logoColor=white&link=qhdrmfdl123@gmail.com)](mailto:qhdrmfdl123@gmail.com)|[![Gmail Badge](https://img.shields.io/badge/Gmail-d14836?style=flat-square&logo=Gmail&logoColor=white&link=imash0525@gmail.com)](mailto:imash0525@gmail.com)|[![Gmail Badge](https://img.shields.io/badge/Gmail-d14836?style=flat-square&logo=Gmail&logoColor=white&link=lukehanjun@gmail.com)](mailto:lukehanjun@gmail.com)|[![Gmail Badge](https://img.shields.io/badge/Gmail-d14836?style=flat-square&logo=Gmail&logoColor=white&link=ilho7159@gmail.com)](mailto:ilho7159@gmail.com)|[![Gmail Badge](https://img.shields.io/badge/Gmail-d14836?style=flat-square&logo=Gmail&logoColor=white&link=jaehyuk712@gmail.com)](mailto:jaehyuk712@gmail.com)|
