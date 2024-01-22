@@ -1,6 +1,6 @@
 # dataset settings
 dataset_type = 'CocoDataset'
-data_root = '/data/ephemeral/home/dataset/'
+data_root = '/data/ephemeral/home/level2-objectdetection-cv-13/dataset/'
 
 classes = ("General trash", "Paper", "Paper pack", "Metal", "Glass", 
            "Plastic", "Styrofoam", "Plastic bag", "Battery", "Clothing")

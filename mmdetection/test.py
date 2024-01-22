@@ -21,17 +21,19 @@ from mmdet.utils import (build_ddp, build_dp, compat_cfg, get_device,
 from mmcv.parallel import MMDataParallel
 from pycocotools.coco import COCO
 import pandas as pd
+from pathlib import Path
+import sys
 
 def parse_args():
     parser = argparse.ArgumentParser(
         description='MMDet test (and eval) a model')
-    parser.add_argument('--exp-name', help='experiment name')
-    # parser.add_argument('--config', help='test config file path')
+    # parser.add_argument('--exp-name', help='experiment name')
+    parser.add_argument('--config', help='test config file path')
     parser.add_argument('--checkpoint', help='checkpoint file path')
-    parser.add_argument(
-        '--work-dir',
-        help='the directory to save the file containing evaluation metrics',
-        default='data/ephemeral/home/results/')
+    # parser.add_argument(
+    #     '--work-dir',
+    #     help='the directory to save the file containing evaluation metrics',
+    #     default='data/ephemeral/home/results/')
     parser.add_argument('--seed', help='seed', default=2022)
     
     args = parser.parse_args()
@@ -39,14 +41,19 @@ def parse_args():
 
 def main():
     args = parse_args()
-    exp_name = args.exp_name
 
-    cfg = Config.fromfile(f'./mmdetection/configs/_teamconfig_/{exp_name}/{exp_name}_config.py')
+    root_path = Path(__file__).parent.parent
 
+    config_name = args.config
+    config_path = os.path.join(root_path, "mmdetection/configs/_teamconfig_/")
+    config_path = os.path.join(config_path, config_name)
+
+    cfg = Config.fromfile(config_path)
+    
     cfg.data.test.test_mode = True
     cfg.seed = args.seed
     cfg.gpu_ids = [1]
-    cfg.work_dir = args.work_dir
+    cfg.work_dir = '/'.join(args.checkpoint.split('/')[:-1])
     cfg.model.train_cfg = None
 
     dataset = build_dataset(cfg.data.test)
@@ -88,7 +95,7 @@ def main():
     submission = pd.DataFrame()
     submission['PredictionString'] = prediction_strings
     submission['image_id'] = file_names
-    submission.to_csv(os.path.join(cfg.work_dir, f'submission_{exp_name}.csv'), index=None)
+    submission.to_csv(os.path.join(cfg.work_dir, f'submission.csv'), index=None)
 
 if __name__ == '__main__':
     main()

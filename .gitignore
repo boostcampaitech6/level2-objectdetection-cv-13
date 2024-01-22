@@ -310,4 +310,17 @@ $RECYCLE.BIN/
 # Windows shortcuts
 *.lnk
 
+# YOLO checkpoint
+*/yolo_train/
+*/*.pt
+
+# EfficientDet checkpoint
+*/ckpt
+*/formal_ckpt
+
+# deta checkpoint
+*/coco
+
 # End of https://www.toptal.com/developers/gitignore/api/macos,linux,windows,visualstudiocode,python,jupyternotebooks
+
+
