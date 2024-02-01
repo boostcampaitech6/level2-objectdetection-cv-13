@@ -1,0 +1,10 @@
+mmcv==2.1.0
+openmim==0.3.9
+pycocotools==2.0.7
+qudida==0.0.4
+scikit-image==0.22.0
+shapely==2.0.2
+terminaltables==3.1.10
+torchaudio==0.13.1+cu116
+torchvision==0.14.1+cu116
+wandb==0.16.2

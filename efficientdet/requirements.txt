@@ -1,0 +1,21 @@
+--extra-index-url https://download.pytorch.org/whl/cu118
+torch==2.1.0+cu118
+--extra-index-url https://download.pytorch.org/whl/cu118
+torchvision==0.16.0+cu118
+
+timm
+numpy
+pandas
+tqdm
+scikit-learn
+pyyaml
+wandb
+effdet
+lion-pytorch
+scikit-learn
+albumentations
+
+# an update version that fixes some bugs, incl issues with numpy >= 1.18
+pycocotools>=2.0.2
+
+omegaconf>=2.0

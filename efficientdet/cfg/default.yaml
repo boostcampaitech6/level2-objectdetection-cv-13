@@ -1,0 +1,50 @@
+# dataset / ckpt path
+root_dir: ../dataset
+train_file: k-fold-2024/train_fold0.json
+valid_file: k-fold-2024/valid_fold0.json
+test_file: test.json
+ckpt_dir: ckpt
+ckpt_file: epoch_50_tloss_0.6366659570713432_vloss_1.1888419399495984_vmAP50_0.0.pth
+
+# hyper params
+epochs: 150
+num_classes: 10
+batch_size: 16
+num_workers: 0
+seed: 2022
+
+## optimizer
+optimizer:
+  SGD:
+    lr: 0.005
+    momentum: 0.9
+    weight_decay: 0.0005
+  Adam:
+    lr: 0.0001
+    beta1: 0.9
+    beta2: 0.999
+    eps: 0.00000001
+    weight_decay: 0.0005
+  AdamW:
+    lr: 0.0001
+    beta1: 0.9
+    beta2: 0.999
+    eps: 0.00000001
+    weight_decay: 0.0005
+  Lion:
+    lr: 0.0001
+    beta1: 0.95
+    beta2: 0.98
+    weight_decay: 0.01
+  
+## wandb
+wandb:
+  project: Boost Camp Lv2-1
+  entity: frostings
+  name: efficientdet-d4-Adam
+
+# model
+model_name: efficientdet_d3
+input_size: 512
+soft_nms: False
+max_det_per_image: 50
