@@ -19,6 +19,8 @@
 ### 요약
 이 대회는 지구 환경 보호에 기여할 수 있는 쓰레기 감지 및 분류 모델을 개발하는 것을 목표로 합니다. 제공되는 데이터셋을 활용해 모델을 학습시키고, 이를 통해 분리수거를 효율적으로 할 수 있는 방법을 탐색합니다. 이 기술은 쓰레기 처리 시설의 효율성을 높이고, 환경 교육에도 응용될 수 있습니다. 참가자들은 지구 환경 보호를 위한 중요한 일에 기여하는 동시에, 인공지능과 기계 학습 분야에서 실질적인 문제 해결 능력을 키울 수 있는 기회를 갖게 됩니다. 
 
+[Wrap up Report](https://github.com/boostcampaitech6/level2-objectdetection-cv-13/blob/main/Object%20Detection%20Wrap%20up.pdf)
+
 > ## Project Structure
 
 ```
